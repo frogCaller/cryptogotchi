@@ -1,8 +1,8 @@
 # cryptogotchi
 
 <div style="display: flex; gap: 10px;"> 
-    <img src="images/crypto2.jpg" width="320">
-    <img src="images/crypto3.jpg" height="320">
+    <img src="images/crypto2.jpg" width="300">
+    <img src="images/crypto3.jpg" height="300">
 </div>
 
 This project uses a 2.13inch e-ink display with a Raspberry Pi Zero to display crypto stats.
