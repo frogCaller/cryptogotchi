@@ -49,11 +49,10 @@ UPLOAD2 = '(0__1)'
 
 coins = [
     {"id": "bitcoin", "name": "bitcoin", "display": "BTC", "format": 0},
+    {"id": "ethereum", "name": "ethereum", "display": "ETH", "format": 2},
     {"id": "dogecoin", "name": "dogecoin", "display": "DOGE", "format": 3},
     {"id": "litecoin", "name": "litecoin", "display": "LTC", "format": 2},
-    {"id": "verus-coin", "name": "verus-coin", "display": "VRSC", "format": 2},
-    {"id": "shiba-inu", "name": "shiba-inu", "display": "SHIB", "format": 6},
-    {"id": "ethereum", "name": "ethereum", "display": "ETH", "format": 2}
+    {"id": "verus-coin", "name": "verus-coin", "display": "VRSC", "format": 2}
 ]
 
 data_directory = "Data"
