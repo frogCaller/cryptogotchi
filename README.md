@@ -4,7 +4,7 @@
     <img src="images/crypto2.jpg" width="300">
     <img src="images/crypto3.jpg" height="300">
 </div>
-A playful twist on Pwnagotchi! Cryptogotchi fetches live cryptocurrency prices and displays them on a 2.13-inch e-ink display. Track your favorite coins like Bitcoin, Dogecoin, and more in real time with this Raspberry Pi-powered companion. Perfect for crypto enthusiasts who want a fun, minimalist way to stay updated on market trends.
+A playful twist on Pwnagotchi! Cryptogotchi fetches live cryptocurrency prices and displays them on a 2.13-inch e-ink display. Track your favorite coins like Bitcoin, Dogecoin, and more!
 
 # Materials
 * [Raspberry pi Zero 2 WH](https://amzn.to/3VO7eu2)<br />
