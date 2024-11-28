@@ -6,11 +6,15 @@
 </div>
 A playful twist on Pwnagotchi! Cryptogotchi fetches live cryptocurrency prices and displays them on a 2.13-inch e-ink display. Track your favorite coins like Bitcoin, Dogecoin, and more!
 
+Data provided by [CoinGecko](https://www.coingecko.com/en/api)
+
+
 # Materials
 * [Raspberry pi Zero 2 WH](https://amzn.to/3VO7eu2)<br />
 * [Micro SD Cards](https://amzn.to/4erXgWD)<br />
 * [2.13inch e-ink](https://amzn.to/3WLFCX2)<br />
 * [UPS Hat](https://amzn.to/4ceZp6I)<br />
+
 <br />
 (Amazon affiliate links)<br />
 
@@ -25,15 +29,10 @@ A playful twist on Pwnagotchi! Cryptogotchi fetches live cryptocurrency prices a
    - Navigate to Interfacing Options -> SPI -> Enable.
    - Navigate to Interfacing Options -> I2C -> Enable.
 
-3. **Python libraries:**
-   - sudo apt-get update
-   - sudo apt-get install python3-pip
-   - sudo apt-get install python3-pil
-   - sudo apt-get install python3-numpy
-   - sudo apt-get install python3-matplotlib
-   - sudo apt-get install python3-psutil
-   - sudo apt-get install python3-spidev
-   <br />
+3. **Install System and Python Dependencies:**
+   ```bash
+   chmod +x setup.sh
+   ./setup.sh
 
 # Wiring and Setup
 1. **Connect 2.13inch e-Ink HAT to Raspberry Pi:**
@@ -42,7 +41,6 @@ A playful twist on Pwnagotchi! Cryptogotchi fetches live cryptocurrency prices a
 
 2. Clone the repository:
    ```bash
-   sudo apt install git -y
    git clone https://github.com/frogCaller/cryptogotchi.git
    cd cryptogotchi
 
@@ -52,7 +50,6 @@ A playful twist on Pwnagotchi! Cryptogotchi fetches live cryptocurrency prices a
     ```
     nano main.py
     ```
-  - Find the line where the wallet address is defined and replace the placeholder with your own Verus wallet address.
   - Add a cool username for your cryptogotchi.
     ```
     username = "jellybean"
