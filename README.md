@@ -29,34 +29,36 @@ Data provided by [CoinGecko](https://www.coingecko.com/en/api)
    - Navigate to Interfacing Options -> SPI -> Enable.
    - Navigate to Interfacing Options -> I2C -> Enable.
 
-3. **Install System and Python Dependencies:**
+3. Clone the repository:
    ```bash
-   chmod +x setup.sh
-   ./setup.sh
+   sudo apt install -y git
+   git clone https://github.com/frogCaller/cryptogotchi.git
+   cd cryptogotchi
 
 # Wiring and Setup
 1. **Connect 2.13inch e-Ink HAT to Raspberry Pi:**
    - Connect the 2.13inch e-Ink HAT to your Raspberry Pi. <br />
    - Connect the UPS Hat for continuous power supply. This will allow you to move the project anywhere without worrying about power interruptions.
 
-2. Clone the repository:
+2. **Install System and Python Dependencies:**
    ```bash
-   git clone https://github.com/frogCaller/cryptogotchi.git
-   cd cryptogotchi
+   chmod +x setup.sh
+   ./setup.sh
 
 # Usage Instructions
-1. Edit `main.py` and add a username:
-  - Open main.py in a text editor.
+1. Open main.py in a text editor and set your username:
     ```
     nano main.py
     ```
-  - Add a cool username for your cryptogotchi.
+2. Replace the placeholder with your desired username: 
     ```
     username = "jellybean"
     ```
     
-2. Run the script:
-   - Run the script: `python3 main.py`
+3. Run the script:
+   ```
+   python3 main.py
+   ```
 
 
 # Troubleshooting
