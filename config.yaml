@@ -1,0 +1,7 @@
+settings:
+  username: Cryptogotchi       # User's preferred username for personalization.
+  dark_mode: false             # Toggles between dark mode (true) and light mode (false).
+  screen_rotation: 180         # Screen rotation angle in degrees (0, 180).
+  refresh_rate: 3              # Interval in seconds for refreshing the display.
+  show_faces: true             # Enables or disables the display of faces.
+  graph_history: 1             # Number of days to display in the graph's historical data.
