@@ -45,17 +45,8 @@ Data provided by [CoinGecko](https://www.coingecko.com/en/api)
    chmod +x setup.sh
    ./setup.sh
 
-# Usage Instructions
-1. Open main.py in a text editor and set your username:
-    ```
-    nano main.py
-    ```
-2. Replace the placeholder with your desired username: 
-    ```
-    username = "jellybean"
-    ```
-    
-3. Run the script:
+# Usage Instructions  
+1. Run the script:
    ```
    python3 main.py
    ```
