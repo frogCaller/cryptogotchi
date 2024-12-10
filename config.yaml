@@ -5,3 +5,23 @@ Cryptogotchi Settings:
   refresh_rate: 3
   show_faces: true
   graph_history: 1
+
+Time Settings:
+  time_format: "12h"
+  text_style: 1
+  text_height: 36
+  dark_mode: false
+  screen_rotation: 180
+  
+Text Settings:
+  text_style: 1
+  text_height: 18
+  text_alignment: center
+  text_justify: center
+  dark_mode: false
+  screen_rotation: 180
+  quote_display_duration: 20
+  
+Drawing Settings:
+  screen_rotation: 180
+  dark_mode: false
