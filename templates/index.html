@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.01, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="button-container">        
+        <button id="darkModeToggle" class="home-button"><i class="far fa-moon"></i></button>
+      
+        <div class="wifi-icon">                                     <!-- <div class="wifi-icon"> -->
+            {% if wifi_status == "connected" %}
+            <i class="fas fa-wifi"></i>
+            {% else %}
+            <span style="position: relative; display: inline-block;">
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-slash"></i>
+            </span>
+            {% endif %}
+        </div>
+      
+        <div class="dropdown">
+            <button class="dropdown-button" onclick="toggleDropdown()">
+                <i class="fa fa-power-off"></i>
+            </button>
+            <div class="dropdown-content" id="dropdownMenu">
+                <button id="restart-pi">&#8634; Restart</button>
+                <button id="shutdown-pi"><i class="fa fa-power-off"></i> Shutdown</button>
+            </div>
+        </div>
+    </div>
+  
+
+    <h1 class="home-title">Home</h1>
+
+     
+    <div class="button-container">
+        <button id="clockPageButton"><i class="fa-regular fa-clock"></i></button>
+        <button id="weatherPageButton"><i class="fa-solid fa-cloud-sun-rain"></i></button>
+        <button id="drawPageButton"><i class="fa-solid fa-palette"></i></button>
+        <button id="messagePageButton"><i class="fa-regular fa-message"></i></button>
+        <button id="cryptoPageButton"><i class="fa fa-bitcoin"></i></button>
+        <button id="cmdPageButton"><i class="fa-solid fa-terminal"></i></button>
+    </div>
+  
+    <!-- System Info Section -->  
+    <div class="system-info">
+        <span><i class="fa-solid fa-microchip"></i><strong id="cpu-usage">--%</strong></span>
+        <span><i class="fa-solid fa-memory"></i><strong id="memory-usage">--%</strong></span>
+        <span><i class="fa-solid fa-database"></i><strong id="storage-usage">--%</strong></span>
+        <span><i class="fa-solid fa-temperature-half"></i><strong id="cpu-temp">--°C</strong></span>
+    </div>
+    
+    <script>
+        // Toggle dropdown visibility
+        function toggleDropdown(event) {
+            const dropdown = document.getElementById("dropdownMenu");
+            dropdown.classList.toggle("show");
+        }
+
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function (event) {
+            if (!event.target.closest('.dropdown')) {
+                const dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        };
+      
+        async function manageScript(killScript, startScript) {
+            try {
+                const response = await fetch("/manage-script", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        kill_script: killScript,
+                        start_script: startScript
+                    }),
+                });
+
+                if (response.ok) {
+                    console.log(`Operation completed: kill=${killScript}, start=${startScript}`);
+                } else {
+                    console.error("Failed to manage script.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+      
+      
+        document.getElementById("restart-pi").addEventListener("click", () => {
+            if (confirm("Are you sure you want to restart the Raspberry Pi?")) {
+                fetch("/restart", { method: "POST" })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error("Error restarting Raspberry Pi:", error));
+            }
+        });
+
+        document.getElementById("shutdown-pi").addEventListener("click", () => {
+            if (confirm("Are you sure you want to shutdown the Raspberry Pi?")) {
+                fetch("/shutdown", { method: "POST" })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error("Error shutting down Raspberry Pi:", error));
+            }
+        });
+        
+        document.getElementById('clockPageButton').addEventListener('click', () => {
+            window.location.href = '/clock';
+        });        
+        document.getElementById('weatherPageButton').addEventListener('click', () => {
+            window.location.href = '/weather';
+        });        
+        document.getElementById('drawPageButton').addEventListener('click', () => {
+            window.location.href = '/draw';
+        });
+        document.getElementById('cryptoPageButton').addEventListener('click', () => {
+            window.location.href = '/crypto';
+        });
+        document.getElementById('messagePageButton').addEventListener('click', () => {
+            window.location.href = '/message';
+        });
+        document.getElementById('cmdPageButton').addEventListener('click', () => {
+            window.location.href = '/cmd';
+        })
+      
+    </script>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+</body>
+</html>
