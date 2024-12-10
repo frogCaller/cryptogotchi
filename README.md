@@ -1,3 +1,5 @@
+# THIS PROJECT IS UNDER CONSTRUCTION
+
 # cryptogotchi
 
 <div style="display: flex; gap: 10px;"> 
