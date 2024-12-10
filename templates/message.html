@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.01, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .text-box {
+            width: 250px;
+            height: 122px;
+            font-size: 16px;
+            font-family: Font1, sans-serif;
+            border: 2px solid #000;
+            border-radius: 10px;
+            box-sizing: border-box;
+            margin: 20px auto;
+            text-align: left;
+            padding: 8px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: flex-start; /* Default alignment to top */
+            justify-content: flex-start; /* Default horizontal alignment */
+        }
+      
+        /* Adjustments for larger screens (desktop) */
+        @media (min-width: 768px) {
+            .text-box {
+                width: 500px;
+                height: 244px;
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button id="homePageButton" class="home-button"><i class="fa-solid fa-house"></i></button>
+
+        <div class="dropdown">
+            <button class="dropdown-button" onclick="toggleDropdown()"><i class="fa-solid fa-sliders"></i>
+            </button>
+            <div class="dropdown-content" id="dropdownMenu">
+                <button id="runFortuneButton"><i class="fa-solid fa-clover"></i> Fortune</button>
+                <button id="runJokeButton"><i class="fa-regular fa-face-grin-tongue-wink"></i> Jokes</button>
+            </div>
+        </div>
+    </div>
+  
+    <h1 class="home-title">Text</h1>
+  
+    <div class="button-container">
+        <button type="button" id="justifyLeft" class="justify-button active-tool" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-align-left"></i></button>
+        <button type="button" id="justifyCenter" class="justify-button" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-align-center"></i></button>
+        <button type="button" id="justifyRight" class="justify-button" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-align-right"></i></button>
+    </div>
+  
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <div class="button-container" style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <button type="button" id="alignTop" class="align-button active-tool" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-caret-right"></i></button>
+            <button type="button" id="alignMiddle" class="align-button" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-caret-right"></i></button>
+            <button type="button" id="alignBottom" class="align-button" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-caret-right"></i></button>
+        </div> 
+        <!-- Textarea -->
+        <div id="textBox" class="text-box" contenteditable="true">The cat was playing in the garden.</div>
+      
+        <!-- Text Options -->
+        <div class="button-container" style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <button type="button" id="increaseTextHeight" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-plus"></i></button>
+            <span id="currentTextHeight" class="text-height-display" style="font-size: 14px;">16</span>
+            <button type="button" id="decreaseTextHeight" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-minus"></i></button>
+        </div>      
+    </div>
+
+    <div class="button-container">
+        <button type="button-container" id="previousFont" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-chevron-left"></i></button>
+        <span id="currentTextStyle" class="text-style-display" style="font-size: 14px;">1</span>
+        <button type="button" id="nextFont" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+
+    <!-- Display Button -->
+    <div class="button-container">
+        <button id="displayButton" style="width: 100px;"><i class="fa-solid fa-display"></i></button>
+    </div>
+  
+    <script src="{{ url_for('static', filename='message.js') }}"></script>
+
+</body>
+</html>
