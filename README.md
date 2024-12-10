@@ -48,7 +48,7 @@ Data provided by [CoinGecko](https://www.coingecko.com/en/api)
 # Usage Instructions  
 1. Run the script:
    ```
-   python3 main.py
+   python3 cryptogotchi.py
    ```
 
 
