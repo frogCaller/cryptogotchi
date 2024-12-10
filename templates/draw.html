@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Canvas</title>
+</head>
+<body>
+    <div class="button-container">
+        <button id="homePageButton" class="home-button"><i class="fa-solid fa-house"></i></button>
+        <button class="settings-button" id="saveButton"><i class="fa-regular fa-floppy-disk"></i></button>    
+    </div>
+  
+    <h1 class="home-title">Canvas</h1>
+  
+     <div class="button-container" style="max-width: 500px; width: 100%; display: flex; align-items: center; justify-content: space-between; margin: 0 auto; padding: 0 10px; box-sizing: border-box;">
+        <div>
+            <button id="undoButton" style="width: 40px; height: 40px; font-size: 12px;"><i class="fa-solid fa-arrow-rotate-left"></i></button>
+            <button id="redoButton" style="width: 40px; height: 40px; font-size: 12px;"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+        </div> 
+      <div style="flex-grow: 1;"></div>
+        <div>
+            <button id="decreaseBrush" style="width: 40px; height: 40px; font-size: 12px;"><i class="fa-solid fa-circle-minus"></i></button>
+            <button id="increaseBrush" style="width: 40px; height: 40px; font-size: 12px;"><i class="fa-solid fa-circle-plus"></i></button>
+        </div>
+     </div>
+  
+    <canvas id="drawingCanvas" width="500" height="244"></canvas>
+  
+    <div class="button-container">
+        <button id="drawButton" class="active-tool" style="width: 50px; height: 40px; font-size: 12px;"><i class="fa-solid fa-pen"></i></button>
+        <button id="eraseButton" style="width: 50px; height: 40px; font-size: 12px;"><i class="fa-solid fa-eraser"></i></button>
+        <button id="lineButton" style="width: 50px; height: 40px; font-size: 12px;"><i class="fa-solid fa-ruler"></i></button>
+        <button id="importButton" style="width: 50px; height: 40px; font-size: 12px;"><i class="fa-regular fa-image"></i></button>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        <button id="clearButton" style="width: 50px; height: 40px; font-size: 12px;"><i class="fa-regular fa-trash-can"></i></button>
+
+    </div>
+  
+    <div class="button-container">   
+        <button id="displayButton" style="width: 100px;"><i class="fa-solid fa-display"></i></button>
+    </div>
+
+    <script src="{{ url_for('static', filename='draw.js') }}"></script>
+</body>
+</html>
