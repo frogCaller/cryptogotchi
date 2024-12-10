@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.01, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Terminal</title>
+    <style>
+
+        .input-container {
+            position: relative;
+            width: 80%;
+            max-width: 480px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 50px 10px 10px; /* Add space for the button */
+            font-size: 16px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        button {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            padding: 5px 15px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #ctrlButton.active {
+            background-color: #555 !important; /* Highlight active Ctrl button */
+            color: white;
+        }
+      
+        #command-output {
+            width: 90%;
+            height: 300px;
+            margin-top: 20px;
+            padding: 10px;
+            background: #000;
+            border: 1px solid #555;
+            border-radius: 10px; /* Rounded corners */
+            overflow-y: auto;
+            white-space: normal;
+            color: #0f0;
+            font-family: "Brush Script MT"; /* Brush Script MT font */
+            font-size: 12px;
+        }
+        #command-output span {
+          display: inline-block; /* Stack items vertically */
+          margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Button -->
+    <div class="button-container">
+        <button id="homePageButton" class="home-button"><i class="fa-solid fa-house"></i></button> 
+    </div>
+
+    <!-- Title -->
+    <h1>Terminal</h1>
+
+    <!-- Command Output Section -->
+    <div id="command-output"></div>
+
+    <div class="button-container">
+        <button id="tabButton">Tab</button>
+        <button id="ctrlButton">Ctrl</button>
+    </div>
+
+    <!-- Input and Run Button -->
+    <div class="input-container">
+        <input type="text" id="command-input" placeholder="Enter your command" autocapitalize="none" autocomplete="off">
+        <button onclick="sendCommand()">Run</button>
+    </div>
+
+    <script>
+        // Attach event listener to the home button
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedMode = localStorage.getItem("theme");
+            if (savedMode === "dark-mode") {
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.classList.remove("dark-mode");
+            }
+        });
+        document.getElementById('homePageButton').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+        // Send Command Functionality
+
+      
+        function sendCommand() {
+            const inputField = document.getElementById('command-input');
+            const outputDiv = document.getElementById('command-output');
+            const command = inputField ? inputField.value.trim() : '';
+        
+            // Ensure the command is valid
+            if (!command) {
+                outputDiv.innerHTML += `<div>&gt; </div>`;
+                return;
+            }
+          
+            // Clear the input field immediately to indicate the command is running
+            inputField.value = '';
+        
+            // Handle "clear" command to reset the terminal
+            if (command === 'clear') {
+                outputDiv.innerHTML = ''; // Clear the command output
+                inputField.value = ''; // Clear input
+                return;
+            }
+        
+            fetch('/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: command })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const device = data.device || 'unknown-host';
+                    const hostname = data.hostname || 'unknown-device';
+                    const directory = data.directory || '~';
+        
+                    // Display the command in the desired format
+                    outputDiv.innerHTML += `
+                        <div>
+                            <span style="color: #4ceb34;">${hostname}@${device}:</span>
+                            <span style="color: #2196f3;">~/${directory} $</span>
+                            <span style="color: white;">${command}</span>
+                        </div>
+                    `;
+        
+                    if (command === 'ls' && data.items) {
+                        // Process structured items from the backend
+                        const formattedOutput = data.items
+                            if (command === 'ls' && data.items) {
+                                // Process structured items from the backend
+                                const formattedOutput = data.items
+                                    .map(item => {
+                                        let color;
+                                        if (item.type === 'folder') {
+                                            color = '#2196f3'; // Blue for folders
+                                        } else if (item.type === 'executable') {
+                                            color = '#4ceb34'; // Green for executables
+                                        } else {
+                                            color = 'white'; // White for regular files
+                                        }
+                                        return `<span style="color: ${color}; margin-right: 20px;">${item.name}</span>`;
+                                    })
+                                    .join(''); // Join items into a single horizontal line
+                                outputDiv.innerHTML += `<div>${formattedOutput}</div>`;
+                            }
+                    } else {
+                        // Handle non-ls output
+                        const formattedOutput = data.output ? data.output.replace(/\n/g, '<br>') : '';  // : 'No output.';
+                        outputDiv.innerHTML += `<div style="color: white;">${formattedOutput}</div>`;
+                    }
+        
+                    outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to the bottom
+                    inputField.value = ''; // Clear input
+                })
+                .catch(err => {
+                    outputDiv.innerHTML += `<div>Error: ${err.message}</div>`;
+                });
+        }
+      
+        // Add event listener to detect Enter key on the input field
+        document.getElementById('command-input').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                sendCommand(); // Trigger the sendCommand function
+            }
+        });
+
+        const ctrlButton = document.getElementById('ctrlButton');
+        let isCtrlActive = false; // To track the state of the Ctrl button
+        
+        // Toggle the Ctrl button
+        document.getElementById('ctrlButton').addEventListener('click', () => {
+            const ctrlButton = document.getElementById('ctrlButton');
+            isCtrlActive = !isCtrlActive; // Toggle state
+            ctrlButton.style.backgroundColor = isCtrlActive ? '#555' : ''; // Highlight when active
+        });
+        
+        // Listen for key presses to handle Ctrl+l and other combinations
+        document.getElementById('command-input').addEventListener('keydown', (event) => {
+            if (isCtrlActive) {
+                if (event.key.toLowerCase() === 'l') {
+                    // Clear the screen when Ctrl+l is pressed
+                    const outputDiv = document.getElementById('command-output');
+                    outputDiv.innerHTML = ''; // Clear the terminal output
+                    event.preventDefault(); // Prevent default behavior
+                    isCtrlActive = false; // Reset Ctrl state
+                    document.getElementById('ctrlButton').style.backgroundColor = ''; // Unhighlight Ctrl button
+                }
+            }
+        });
+
+        
+        // Highlight the Ctrl button when the keyboard Ctrl key is pressed
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Control') {
+                isCtrlActive = true;
+                ctrlButton.style.backgroundColor = '#555'; // Highlight Ctrl button
+            }
+        });
+        
+        // Unhighlight the Ctrl button when the keyboard Ctrl key is released
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'Control') {
+                isCtrlActive = false;
+                ctrlButton.style.backgroundColor = ''; // Unhighlight Ctrl button
+            }
+        });
+      
+        const tabButton = document.getElementById('tabButton');
+        const inputField = document.getElementById('command-input');
+        
+        // Handle Tab key press on the keyboard
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Tab') {
+                event.preventDefault(); // Prevent default focus-shifting behavior
+                handleAutocomplete(); // Trigger the autocomplete function
+                tabButton.style.backgroundColor = '#555'; // Highlight Tab button
+            }
+        });
+        
+        // Unhighlight Tab button on key release
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'Tab') {
+                tabButton.style.backgroundColor = ''; // Remove highlight
+            }
+        });
+        
+        // Handle Tab button click
+        tabButton.addEventListener('click', () => {
+            handleAutocomplete(); // Trigger the autocomplete function
+            tabButton.style.backgroundColor = '#555'; // Highlight Tab button briefly
+            setTimeout(() => {
+                tabButton.style.backgroundColor = ''; // Remove highlight after a short delay
+            }, 200);
+        });
+        
+        function handleAutocomplete() {
+            const currentText = inputField.value.trim();
+            const commandParts = currentText.split(' ');
+            const lastWord = commandParts.pop(); // Get the last part of the command
+        
+            if (lastWord) {
+                fetch('/autocomplete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prefix: lastWord })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const matches = data.matches || [];
+        
+                        // Filter matches for `cd` commands
+                        const isCdCommand = commandParts[0] === 'cd';
+                        const filteredMatches = isCdCommand
+                            ? matches.filter(match => match.type === 'folder') // Only folders for `cd`
+                            : matches; // Include all matches for other commands
+        
+                        if (filteredMatches.length === 1) {
+                            // If there's only one match, autocomplete it
+                            const match = filteredMatches[0];
+                            const commandWithoutLastWord = currentText.slice(0, -lastWord.length).trim();
+                            inputField.value = `${commandWithoutLastWord} ${match.name}${match.type === 'folder' ? '/' : ''}`.trim();
+                        } else if (filteredMatches.length > 1) {
+                            // If there are multiple matches, show them in the command output
+                            const outputDiv = document.getElementById('command-output');
+                            const suggestions = filteredMatches.map(match => match.name).join(' ');
+                            outputDiv.innerHTML += `<div>Suggestions: ${suggestions}</div>`;
+                            outputDiv.scrollTop = outputDiv.scrollHeight;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error fetching autocomplete suggestions:', err);
+                    });
+            }
+        
+            inputField.focus(); // Ensure the input field keeps focus
+        }
+        
+
+    </script>
+</body>
+</html>
