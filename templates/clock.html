@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.01, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .time-box {
+            width: 250px;
+            height: 122px;
+            font-size: 24px;
+            font-family: 'Font1', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #000;
+            border-radius: 10px;
+            box-sizing: border-box;
+            margin: 20px auto;
+            text-align: center;
+            color: #121212;
+            background-color: #f0f0f0;
+        }
+        .time-box.dark-mode {
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* Light text color */
+            border: 2px solid #ffffff; /* Adjust border color for contrast */
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button id="homePageButton" class="home-button"><i class="fa-solid fa-house"></i></button> 
+
+        <div class="dropdown">
+            <button class="dropdown-button" onclick="toggleDropdown()"><i class="fa-solid fa-sliders"></i>
+            </button>
+            <div class="dropdown-content" id="dropdownMenu">
+                <button id="runTimerButton"><i class="fa-solid fa-clover"></i> Timer</button>
+            </div>
+        </div>
+    </div>
+  
+    <h1 class="home-title">Time</h1>
+
+  
+  
+  
+    <!-- Time Box -->
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <div class="button-container" style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <button type="button" id="previousFont" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-chevron-left"></i></button>
+        </div>
+        
+        <div id="timeBox" class="time-box">Loading...</div>
+      
+        <div class="button-container" style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <button type="button" id="nextFont" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>        
+    </div>
+  
+    <div class="options-container">
+        <label class="checkbox-label">
+            <input type="checkbox" id="toggleSeconds" checked>
+            Show Seconds
+        </label>
+        <label class="checkbox-label">
+            <input type="checkbox" id="toggleDarkMode">
+            Dark Mode
+        </label>
+    </div>
+  
+    <div class="button-container">
+        <div class="button-container" style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <button type="button" id="increaseTextHeight" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-plus"></i></button>
+            <span id="currentTextHeight" class="text-height-display" style="font-size: 14px;">36</span>
+            <button type="button" id="decreaseTextHeight" style="width: 40px; height: 30px; font-size: 12px;"><i class="fa-solid fa-minus"></i></button>
+        </div>      
+    </div>
+
+
+    <!-- Display Button -->
+    <div class="button-container">
+        <button id="displayButton" style="width: 100px;"><i class="fa-solid fa-display"></i></button>
+    </div>
+  
+    <script>
+        // Toggle dropdown visibility
+        function toggleDropdown(event) {
+            const dropdown = document.getElementById("dropdownMenu");
+            dropdown.classList.toggle("show");
+        }
+
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function (event) {
+            if (!event.target.closest('.dropdown')) {
+                const dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        };
+      
+    // Default font size and font index
+        let fontSize = 32;
+        let fontIndex = 0;
+        let fontStyle = 1; // Default font style
+        let darkMode = false; // Default dark mode
+        let rotation = 0; // Default rotation
+        let showSeconds = true;
+
+    // List of 7 fonts
+        const fonts = [
+            "Font1",
+            "Font2",
+            "Font3",
+            "Font4",
+            "Font5",
+            "Font6",
+            "Font7"
+        ];
+
+        // Get references to the textarea and buttons
+        const timeBox = document.getElementById("timeBox");
+        const toggleSecondsCheckbox = document.getElementById("toggleSeconds");
+        const toggleDarkModeCheckbox = document.getElementById("toggleDarkMode");
+        const increaseButton = document.getElementById("increaseTextHeight");
+        const decreaseButton = document.getElementById("decreaseTextHeight");
+        const currentTextHeightDisplay = document.getElementById("currentTextHeight");
+        const previousFontButton = document.getElementById("previousFont");
+        const nextFontButton = document.getElementById("nextFont");
+        const currentTextStyleDisplay = document.getElementById("currentTextStyle");
+        const displayButton = document.getElementById("displayButton");
+      
+      
+      
+        function toggleDropdown(event) {
+            const dropdown = document.getElementById("dropdownMenu");
+            dropdown.classList.toggle("show");
+        }
+      
+        function formatTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const hour12 = hours % 12 || 12;
+
+            return showSeconds ? `${hour12}:${minutes}:${seconds} ${ampm}` : `${hour12}:${minutes} ${ampm}`;
+        }
+      
+        // Function to update the time box
+        function updateTime() {
+            timeBox.textContent = formatTime();
+        }
+        setInterval(updateTime, 1000);
+      
+        // Update text height display
+        function updateTextHeightDisplay() {
+            currentTextHeightDisplay.textContent = fontSize; // Update the display
+        }
+        // Update text height display
+        function updateTextStyleDisplay() {
+            currentTextStyleDisplay.textContent = fontStyle; // Update the display
+        }
+        // Increase text size
+        increaseButton.addEventListener("click", () => {
+            fontSize += 1;
+            timeBox.style.fontSize = fontSize + "px";
+            updateTextHeightDisplay();
+        });
+        
+        // Decrease text size
+        decreaseButton.addEventListener("click", () => {
+            if (fontSize > 10) {
+                fontSize -= 1;
+                timeBox.style.fontSize = fontSize + "px";
+                updateTextHeightDisplay();
+            }
+        });
+
+        // Go to the previous font
+        previousFontButton.addEventListener("click", () => {
+            fontIndex = (fontIndex - 1 + fonts.length) % fonts.length;
+            timeBox.style.fontFamily = fonts[fontIndex];
+            fontStyle = fontIndex + 1; // Font styles are 1-indexed in write.py
+            updateTextStyleDisplay();
+        });
+        
+        // Go to the next font
+        nextFontButton.addEventListener("click", () => {
+            fontIndex = (fontIndex + 1) % fonts.length;
+            timeBox.style.fontFamily = fonts[fontIndex];
+            fontStyle = fontIndex + 1; // Font styles are 1-indexed in write.py
+            updateTextStyleDisplay();
+        });
+      
+      
+        // Toggle seconds visibility
+        toggleSecondsCheckbox.addEventListener("change", () => {
+            showSeconds = toggleSecondsCheckbox.checked;
+            updateTime(); // Update the displayed time immediately
+        });      
+      
+        // Toggle dark mode
+        toggleDarkModeCheckbox.addEventListener("change", () => {
+            darkMode = toggleDarkModeCheckbox.checked;
+            if (darkMode) {
+                timeBox.classList.add("dark-mode");
+            } else {
+                timeBox.classList.remove("dark-mode");
+            }
+        });
+      
+
+        const scriptsToTerminate = ['cryptogotchi.py', 'write.py', 'time.py', 'weather.py']; // List of scripts to terminate
+        
+        // Function to stop and restart `time.py` with selected settings
+        async function startClock() {
+            const requestBody = {
+                kill_scripts: scriptsToTerminate,
+                start_script: "time.py",
+                script_args: {
+                    time_format: "12", // Dynamically update if needed
+                    text_height: fontSize,
+                    text_style: fontStyle,
+                    dark_mode: darkMode ? "true" : "false", // Convert to 'true' or 'false'
+                    screen_rotate: rotation === 180 ? "true" : "false", // Convert to 'true' or 'false'
+                    show_seconds: showSeconds ? "true" : "false", // Convert to 'true' or 'false'
+                },
+            };
+        
+            console.log("Sending request to stop and restart time.py:", requestBody);
+        
+            try {
+                const response = await fetch("/manage-script", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestBody),
+                });
+                const data = await response.json();
+                console.log("Response:", data);
+        
+                if (data.success) {
+                    alert("Clock restarted successfully!");
+                } else {
+                    alert("Error restarting clock: " + JSON.stringify(data.details));
+                }
+            } catch (error) {
+                console.error("Error restarting clock:", error);
+                alert("Unexpected error occurred while restarting clock.");
+            }
+        }
+        
+        
+        // Attach the `startClock` function to the Display button
+        document.getElementById("displayButton").addEventListener("click", startClock);
+
+
+      
+      
+      
+      
+
+        // Initialize the time box and displays
+        document.addEventListener("DOMContentLoaded", () => {
+            updateTime();
+            updateTextHeightDisplay();
+            updateTextStyleDisplay();
+        });
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedMode = localStorage.getItem("theme");
+            if (savedMode === "dark-mode") {
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.classList.remove("dark-mode");
+            }
+        });
+      
+
+        function setupScriptRunner(buttonId, scriptName) {
+            const button = document.getElementById(buttonId);
+
+            let isCooldown = false; // Variable to track if the button is on cooldown
+
+            button.addEventListener("click", async () => {
+                if (isCooldown) return; // Prevent action if cooldown is active
+
+                try {
+                    // Disable the button and start the cooldown
+                    isCooldown = true;
+                    button.disabled = true;
+
+                    // Send the POST request to run the script
+                    const response = await fetch("/start-script", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ script: scriptName }),
+                    });
+
+                    if (!response.ok) {
+                        console.error(`Failed to run the script: ${scriptName}`);
+                    }
+                } catch (error) {
+                    console.error(`Error running the script: ${scriptName}`, error);
+                } finally {
+                    // Re-enable the button after 10 seconds
+                    setTimeout(() => {
+                        isCooldown = false;
+                        button.disabled = false;
+                    }, 10000);
+                }
+            });
+        }     
+        setupScriptRunner("runTimerButton", "timer.py");
+        //setupScriptRunner("displayButton", "time.py");
+      
+        document.getElementById('homePageButton').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+      
+    </script>
+
+</body>
+</html>
