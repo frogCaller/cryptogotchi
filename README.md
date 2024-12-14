@@ -44,13 +44,29 @@ Data provided by [CoinGecko](https://www.coingecko.com/en/api)
    ```bash
    chmod +x setup.sh
    ./setup.sh
-# Usage Instructions  
-1. Run the script:
-   ```
+
+# Usage
+   ```bash
    python3 cryptogotchi.py
    ```
 
+# Configuration  Instructions  
+The **`config.yaml`** file is used to customize the behavior and appearance of `cryptogotchi`. Follow these steps to edit the file and adjust the settings:
+1. Open the `config.yaml` file in a text editor:
+   ```bash
+   nano config.yaml
+2. Modify the settings under the Settings section. Below is a description of each configurable option:
+   
+    | Key              | Example Value      | Description                                                                 |
+    |------------------|--------------------|-----------------------------------------------------------------------------|
+    | `username`       | `cryptoFan123`     | Your custom username displayed on the device.                               |
+    | `dark_mode`      | `true`             | Enables or disables dark mode (`true` for dark mode, `false` for light).    |
+    | `screen_rotation`| `0`                | Screen rotation in degrees (`0` or `180`).                                  |
+    | `refresh_rate`   | `5`                | How often the screen refreshes (in seconds).                                |
+    | `show_faces`     | `false`            | Displays animated faces on the screen (`true` to show, `false` to hide).    |
+    | `graph_history`  | `7`                | Number of days shown in historical graphs (e.g., `7` for 7 days).           |
 
+   
 # Troubleshooting
 Common Issues:
    - Ensure SPI & I2C are enabled in the Raspberry Pi configuration.
