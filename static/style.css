@@ -1,0 +1,413 @@
+.header-container {
+    position: relative; /* Keeps content in normal flow */
+    width: 100%;
+    height: 60px; /* Adjust this height based on your button size */
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between; /* Align buttons */
+    align-items: center;
+}
+
+body {
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* height: 80svh;*/
+  overflow-y: hidden; /*  prevents scrolling*/
+  font-family: Helvetica, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  font-size: 25px;
+}
+
+
+/* SCROLLBAR */
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #919191;
+  border-radius: 10px;
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #787777;
+}
+#search-bar {
+  width: 60%;
+  max-width: 150px;
+  font-size: 14px;
+  padding: 5px 5px 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+/* Table Styles */
+table {
+  width: 100%; /* Use the full width of the container */
+  border-collapse: collapse; /* Remove gaps between table cells */
+  font-size: 12px; /* Compact font size */
+  table-layout: fixed; /* Ensure consistent column widths */
+}
+
+td {
+  padding: 3px; /* Minimize padding */
+  border-bottom: 1px solid #ddd; /* Subtle border between rows */
+  word-wrap: break-word; /* Wrap text if too long */
+}
+
+/* Specific column adjustments */
+td:nth-child(1) { /* Rank column */
+  width: 13%; /* Slightly wider for rank */
+  text-align: left; /* Align rank to the left */
+  padding-left: 3px; /* Add a bit of space from the left edge */
+}
+
+td:nth-child(2) { /* Rank column */
+  width: 30%; /* Slightly wider for rank */
+  text-align: left; /* Align rank to the left */
+  padding-left: 0px; /* Add a bit of space from the left edge */
+}
+
+td:nth-child(5) { /* Toggle switch column */
+  width: 20%; /* Keep narrow for toggle switch */
+  text-align: right; /* Align to the right */
+  padding-right: 4px; /* Add space from the right edge */
+}
+
+/* Other columns */
+td:nth-child(3), /* Coin display */
+td:nth-child(4) { /* Coin price */
+  width: 30%; /* Distribute space proportionally */
+  text-align: center; /* Center-align text */
+}
+
+/* Flex layout for form rows */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px; /* Space between rows */
+}
+
+#settingsForm label {
+    font-size: 16px; /* Smaller text size for labels */
+    color: #333; /* Label color */
+    flex: 1; /* Take up remaining space */
+    text-align: left; /* Align text to the left */
+}
+
+
+#settingsForm .switch {
+    position: relative;
+    display: inline-block;
+    max-width: 50px; /* Match the coin list toggle switch size */
+    height: 20px; /* Adjust height to be proportional */
+}
+
+#settingsForm input,
+#settingsForm select {
+    border-radius: 10px;
+    padding: 5px;
+    flex: 0 0 auto; /* Allow inputs to shrink */
+    width: 75px; /* Fixed width for inputs */
+    max-width: 75px; /* Maximum width */
+    font-size: 14px;
+    float: right; /* Align text inside the input */
+}
+#settingsForm .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px; /* Match the size of toggle switches in the coin list */
+    height: 28px; /* Same height as other toggles */
+}
+
+#settingsForm .slider {
+    position: absolute;
+    background-color: #ccc; /* Default background */
+    border-radius: 28px; /* Rounded slider */
+}
+
+#settingsForm .slider:before {
+    position: absolute;
+    height: 20px; /* Button size consistent with coins list */
+    width: 20px; /* Button size consistent with coins list */
+    left: 4px;
+    bottom: 4px;
+}
+
+#settingsForm input:checked + .slider {
+    background-color: #2196f3; /* "On" state color */
+}
+
+#settingsForm input:checked + .slider:before {
+    transform: translateX(22px); /* Movement consistent with button size */
+}
+#settingsForm hr {
+    margin: 8px 0; /* Adjust spacing between dividers */
+    border: 0;
+    border-top: 1px solid #ccc;
+}
+
+
+.form-row-submit {
+  display: flex;
+  justify-content: center; /* Centers the button horizontally */
+  margin-top: 10px; /* Add some spacing from the previous row */
+}
+
+input[type=submit] {
+  width: auto; /* Let the button size itself naturally */
+  background-color: #2196f3;
+  color: white;
+  padding: 18px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #197ecf;
+}
+
+/* Centered square container with scroll */
+.square-container {
+  display: none;
+  width: 90%; /* Use a percentage for responsive width */
+  max-width: 37.5rem; /* Limit the width on larger screens */
+  height: 32.125rem; /* Fixed height for the box */
+  margin: 0 auto; /* Center horizontally */
+  padding: 1rem;
+  border: 2px solid #ccc; /* Add border for the square appearance */
+  border-radius: 0.75rem; /* Optional: rounded corners */
+  background-color: #f9f9f9; /* Light background for contrast */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  overflow-y: auto; /* Enable vertical scrolling when content overflows */
+}
+.square-container.active {
+  display: block;
+}
+
+#fav-coins-table-body td {
+    font-size: 14px; /* Set font size */
+    line-height: 1.6; /* Optional: Increase line height for better readability */
+}
+
+/* Center the heading */
+h1 {
+  text-align: center;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px; /* Add space below the heading */
+}
+
+
+/* Flexbox layout for alignment */
+.toggle-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between rows */
+  margin: 0;
+}
+
+.toggle-item {
+  display: flex;
+  justify-content: space-between; /* Text on the left, toggle on the right */
+  align-items: center; /* Vertically center items */
+  padding: 8px 0; /* Add spacing inside each row */
+  border-bottom: 1px solid #ccc; /* Optional: add a divider between rows */
+}
+
+.toggle-item span {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Coin Info Container */
+.coin-info {
+    display: flex;
+    justify-content: space-between; /* Space between name and display */
+    align-items: center; /* Vertically align coin name and display */
+    flex: 1; /* Ensures coin-info fills available space */
+    max-width: 150px; /* Adjust to control spacing */
+    text-align: left;
+}
+
+/* Coin Name */
+.coin-name {
+    font-weight: bold;
+    font-size: 18px; /* Adjust size for visibility */
+    color: #333; /* Darker text color */
+    margin-right: auto; /* Pushes the name leftward */
+}
+
+/* Coin Display */
+.coin-display {
+    font-weight: normal;
+    font-size: 14px; /* Slightly smaller text */
+    color: gray; /* Gray color for display text */
+    text-align: center; /* Center-align the display name */
+    min-width: 60px; /* Ensures consistent width for alignment */
+}
+
+/* Coin Price */
+.coin-price {
+    font-weight: bold;
+}
+
+/* Style for the toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 28px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 620px) {
+  .square-container {
+    height: 22.75rem; /* Reduce height for smaller screens */
+    padding: 1rem; /* Smaller padding */
+  }
+
+  .toggle-item span {
+    font-size: 14px; /* Adjust font size for text */
+  }
+
+  .switch {
+    width: 40px; /* Smaller toggle size */
+    height: 24px;
+  }
+
+  .slider:before {
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(18px);
+  }
+  canvas {
+    width: 100%; /* Prevent overflow */
+    border: 1px solid black;
+    margin: 20px auto;
+  }
+}
+
+/* Button container */
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center; /* Center buttons */
+  gap: 15px; /* Space between buttons */
+  margin: 15px; /* Add some space above the buttons */
+}
+
+/* Buttons */
+.button-container button {
+  touch-action: manipulation;
+  width: 60px;
+  height: 50px;
+  border: 2px solid #ccc; /* Match square-container border */
+  border-radius: 12px; /* Match square-container rounded corners */
+  background-color: #f9f9f9; /* Match square-container background */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Match square-container shadow */
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.button-container button:hover {
+  background-color: #e0e0e0; /* Slightly darker background on hover */
+}
+
+@media (hover: none) {
+  .button-container button:hover {
+    background-color: inherit; /* Reset to default */
+    color: inherit; /* Reset to default */
+  }
+
+}
+.button-container button:active {
+  transform: scale(0.98); /* Slightly shrink on click */
+}
+.button-container button.active-tool {
+  border: 2px solid #2196f3;
+}
+/* System Info Section */
+.system-info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 5px;
+  margin: 20px auto 10px auto; /* Center the section horizontally */
+  max-width: 800px; /* Set a maximum width */
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background-color: #f4f4f4;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Individual Info Box */
+.system-info span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 80px;
+  padding: 5px;
+}
+
+.system-info strong {
+  font-weight: bold;
+  color: #555;
+  padding-top: 5px;
+}
