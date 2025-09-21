@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.01, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- System Info Section -->
+    <div class="system-info">
+        <span><i class="fa-solid fa-microchip"></i><strong id="cpu-usage">--%</strong></span>
+        <span><i class="fa-solid fa-memory"></i><strong id="memory-usage">--%</strong></span>
+        <span><i class="fa-solid fa-database"></i><strong id="storage-usage">--%</strong></span>
+        <span><i class="fa-solid fa-temperature-half"></i><strong id="cpu-temp">--°C</strong></span>
+    </div>
+
+    <div class="button-container">
+        <button class="tablinks" onclick="openTab(event, 'cryptoList')"><i class="fa-solid fa-list"></i></button>
+        <button class="tablinks" onclick="openTab(event, 'favorites')"><i class="fa-regular fa-star"></i></button>
+        <button class="tablinks" onclick="openTab(event, 'settings')"><i class="fa-solid fa-gear"></i></button>
+        <input
+            type="text"
+            id="search-bar"
+            placeholder="Search.."
+
+        />
+    </div>
+    <div id="cryptoList" class="square-container">
+        <table style="width:100%; border-collapse: collapse; table-layout: fixed;">
+            <tbody id="coins-table-body">
+                <!-- Content for              style="margin-bottom: 10px; padding: 5px; width: 50%;"             Crypto List -->
+            </tbody>
+        </table>
+    </div>
+    <div id="favorites" class="square-container">
+        <table style="width:100%; border-collapse: collapse; table-layout: fixed;">
+            <tbody id="fav-coins-table-body">
+                <!-- Content for Favorites -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="settings" class="square-container">
+        <form id="settingsForm">
+            <div class="form-row">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username"><br>
+            </div>
+            <hr>
+
+            <div class="form-row">
+                <label for="dark_mode">Dark Mode:</label>
+                <label class="switch">
+                    <input type="checkbox" id="dark_mode" name="dark_mode">
+                    <span class="slider round"></span>
+                </label><br>
+            </div>
+            <hr>
+
+            <div class="form-row">
+                <label for="screen_rotation">Rotate Screen:</label>
+                <label class="switch">
+                    <input type="checkbox" id="screen_rotation">
+                    <span class="slider round"></span>
+                </label><br>
+            </div>
+            <hr>
+
+            <div class="form-row">
+                <label for="refresh_rate">Screen Refresh Rate:</label>
+                <input type="number" id="refresh_rate" name="refresh_rate"><br>
+            </div>
+            <hr>
+
+            <div class="form-row">
+                <label for="show_faces">Show Faces:</label>
+                <label class="switch">
+                    <input type="checkbox" id="show_faces" name="show_faces">
+                    <span class="slider round"></span>
+                </label><br>
+            </div>
+            <hr>
+
+            <div class="form-row">
+                <label for="graph_history">Graph History:</label>
+                <input type="number" id="graph_history" name="graph_history"><br>
+            </div>
+            <hr>
+
+            <div class="button-container" style="display: flex; gap: 40px;">
+                <button id="restartCryptogotchi" style="width: 80px; height: 40px;"><i class="fa-regular fa-floppy-disk"></i></button>
+            </div>
+        </form>
+    </div>
+
+
+    <script>
+window.onload = () => {
+    loadSettings();
+};
+
+async function loadSettings() {
+    try {
+        const response = await fetch('/get-config');
+        const config = await response.json();
+        const cryptogotchi = config['Cryptogotchi Settings'];
+
+        document.getElementById('username').value = cryptogotchi.username;
+        document.getElementById('dark_mode').checked = cryptogotchi.dark_mode;
+        document.getElementById('screen_rotation').checked = cryptogotchi.screen_rotation === 180;
+        document.getElementById('refresh_rate').value = cryptogotchi.refresh_rate;
+        document.getElementById('show_faces').checked = cryptogotchi.show_faces;
+        document.getElementById('graph_history').value = cryptogotchi.graph_history;
+    } catch (error) {
+        console.error('Error loading settings:', error);
+    }
+}
+
+document.getElementById('settingsForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = {
+        "Cryptogotchi Settings": {
+            username: document.getElementById('username').value,
+            dark_mode: document.getElementById('dark_mode').checked,
+            screen_rotation: document.getElementById('screen_rotation').checked ? 180 : 0,
+            refresh_rate: parseInt(document.getElementById('refresh_rate').value, 10),
+            show_faces: document.getElementById('show_faces').checked,
+            graph_history: parseInt(document.getElementById('graph_history').value, 10),
+        },
+    };
+
+    try {
+        const response = await fetch('/update-config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+        });
+        const result = await response.json();
+        showNotification(response.ok ? result.message : `Error: ${result.error}`);
+    } catch (error) {
+        console.error('Error updating settings:', error);
+    }
+});
+
+document.getElementById("restartCryptogotchi").addEventListener("click", async () => {
+    try {
+        const response = await fetch("/manage-script", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                kill_scripts: ["cryptogotchi.py"],
+                start_script: "cryptogotchi.py"
+            }),
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log("Restart result:", result);
+            showNotification("Cryptogotchi restarted successfully!");
+        } else {
+            showNotification("Failed to restart Cryptogotchi.", true);
+        }
+    } catch (err) {
+        console.error(err);
+        showNotification("Error restarting Cryptogotchi.", true);
+    }
+});
+
+// Notification helper
+function showNotification(message, isError = false) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.left = '50%';
+    notification.style.transform = 'translateX(-50%)';
+    notification.style.padding = '10px 20px';
+    notification.style.backgroundColor = isError ? '#f8d7da' : '#d1e7dd';
+    notification.style.color = isError ? '#721c24' : '#0f5132';
+    notification.style.border = `1px solid ${isError ? '#f5c6cb' : '#c3e6cb'}`;
+    notification.style.borderRadius = '5px';
+    notification.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
+    notification.style.fontSize = '14px';
+    notification.style.zIndex = '1000';
+    notification.style.opacity = '0';
+    notification.style.transition = 'opacity 0.3s';
+    document.body.appendChild(notification);
+
+    setTimeout(() => { notification.style.opacity = '1'; }, 50);
+    setTimeout(() => { notification.style.opacity = '0'; setTimeout(() => notification.remove(), 300); }, 3000);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const fetchSystemInfo = () => {
+        fetch("/system-info")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("cpu-usage").textContent = `${data.cpu_usage}%`;
+                document.getElementById("memory-usage").textContent = `${data.memory_usage}%`;
+                document.getElementById("cpu-temp").textContent = data.cpu_temp;
+                document.getElementById("storage-usage").textContent = `${data.storage_percent}%`;
+            })
+            .catch(error => console.error("Error fetching system info:", error));
+    };
+
+    fetchSystemInfo();
+    setInterval(fetchSystemInfo, 10000); // every 10 seconds
+});
+
+    </script>
+    <script src="{{ url_for('static', filename='crypto.js') }}"></script>
+</body>
+</html>
