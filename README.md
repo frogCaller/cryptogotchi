@@ -47,7 +47,7 @@ Data provided by [CoinGecko](https://www.coingecko.com/en/api)
 
 # Usage
    ```bash
-   python3 cryptogotchi.py
+   python3 app.py
    ```
 
 # Configuration  Instructions  
