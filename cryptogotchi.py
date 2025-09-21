@@ -5,6 +5,7 @@ import time
 import requests
 import subprocess
 import threading
+import feedparser
 import socket
 import random
 from datetime import datetime, timedelta
@@ -30,12 +31,12 @@ def update_config(key, value):
         yaml.dump(config, file, default_flow_style=False)
 
 config = load_config()
-username = config["Settings"]["username"]
-dark_mode = config["Settings"]["dark_mode"]
-screen_rotate = config["Settings"]["screen_rotation"]
-hide_faces = not config["Settings"]["show_faces"]
-graph_history = config["Settings"]["graph_history"]
-refresh_rate = config["Settings"]["refresh_rate"]
+username = config["Cryptogotchi Settings"]["username"]
+dark_mode = config["Cryptogotchi Settings"]["dark_mode"]
+screen_rotate = config["Cryptogotchi Settings"]["screen_rotation"]
+hide_faces = not config["Cryptogotchi Settings"]["show_faces"]
+graph_history = config["Cryptogotchi Settings"]["graph_history"]
+refresh_rate = config["Cryptogotchi Settings"]["refresh_rate"]
 
 bg_color = 0 if dark_mode else 255
 text_color = 255 if dark_mode else 0
@@ -50,8 +51,8 @@ AWAKE = '(◕‿‿◕)'
 BORED = '(-__-)'
 INTENSE = '(°▃▃°)'
 COOL = '(⌐■_■)'
-HOT = "( '⚆_⚆)"
-HOT2 = "(☉_☉' )"
+HOT = "('⚆_⚆)"
+HOT2 = "(☉_☉')"
 HAPPY = '(•‿‿•)'
 GRATEFUL = '(^‿‿^)'
 EXCITED = '(ᵔ◡◡ᵔ)'
@@ -79,7 +80,6 @@ fallback_coins = [
 
 last_coins_update_time = 0
 
-
 # Data directory
 data_directory = "Data"
 if not os.path.exists(data_directory):
@@ -91,6 +91,7 @@ historical_prices_file = os.path.join(data_directory, "f{coin_id}_historical_pri
 myface = []
 quote_index = 0
 quotes_list = ["In crypto, we trust.", "Crypto never sleeps", "TO THE MOON!", "Stay calm and HODL", "Buy the dip!"]
+hot_quotes = ["It's getting kinda hot!",  "Is it hot in here?",  "I'm sweating a bit",  "I am HOT!"]
 timestamps = []
 
 last_quote_update_time = 0
@@ -99,17 +100,46 @@ first_run = True
 last_price_fetch_time = 0
 last_graph_display_time = time.time() - 120
 
+font10 = ImageFont.truetype('static/Fonts/Font.ttc', 10)
+font12 = ImageFont.truetype('static/Fonts/Font.ttc', 12)
+font15 = ImageFont.truetype('static/Fonts/Font.ttc', 15)
+font18 = ImageFont.truetype('static/Fonts/Font.ttc', 18)
+font20 = ImageFont.truetype('static/Fonts/Font.ttc', 20)
+font22 = ImageFont.truetype('static/Fonts/Font.ttc', 22)
+font25 = ImageFont.truetype('static/Fonts/Font.ttc', 25)
+font30 = ImageFont.truetype('static/Fonts/Font.ttc', 30)
+face32 = ImageFont.truetype('static/Fonts/DejaVuSansMono.ttf', 32)
+BOLD_FONT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 12)
+NewsFont = ImageFont.truetype(('static/Fonts/GravitasOne-Regular.ttf'), 10)
 
-font10 = ImageFont.truetype('Fonts/Font.ttc', 10)
-font12 = ImageFont.truetype('Fonts/Font.ttc', 12)
-font15 = ImageFont.truetype('Fonts/Font.ttc', 15)
-font18 = ImageFont.truetype('Fonts/Font.ttc', 18)
-font20 = ImageFont.truetype('Fonts/Font.ttc', 20)
-font22 = ImageFont.truetype('Fonts/Font.ttc', 22)
-font25 = ImageFont.truetype('Fonts/Font.ttc', 25)
-font30 = ImageFont.truetype('Fonts/Font.ttc', 30)
-face32 = ImageFont.truetype(('Fonts/DejaVuSansMono.ttf'), 32)
 
+news_titles = []
+last_news_fetch_time = 0
+NEWS_FETCH_INTERVAL = 600
+
+RSS_CATEGORIES = {
+    "Crypto": {
+        "CoinDesk": "https://feeds.feedburner.com/CoinDesk",
+        "Decrypt": "https://decrypt.co/feed",
+        "CryptoSlate": "https://cryptoslate.com/feed/",
+        "NewsBTC": "https://www.newsbtc.com/feed/",
+    }
+}
+
+def validate_coins(coins_list):
+    default_structure = {
+        "id": "",
+        "name": "",
+        "display": "",
+        "format": 0,
+        "show": True
+    }
+    for coin in coins_list:
+        for key, default_value in default_structure.items():
+            if key not in coin:
+                coin[key] = default_value
+    return coins_list
+  
 
 def get_coin_data(coin_id):
     try:
@@ -279,7 +309,12 @@ def format_large_number(num):
     except (ValueError, TypeError):
         return num 
       
-
+# --- Function to pick a random news feed ---
+def pick_random_news_feed():
+    category = random.choice(list(RSS_CATEGORIES.keys()))
+    feed_name, feed_url = random.choice(list(RSS_CATEGORIES[category].items()))
+    return feed_url
+  
 def get_wifi_status():
     try:
         subprocess.check_output(['ping', '-c', '1', '8.8.8.8'])
@@ -299,42 +334,45 @@ def update_face(coin_data, first_run):
 
     if wifi_status == "NET ERROR":
         myface.append(SAD)
-    elif cpu_temp_value and cpu_temp_value >= 72:
+        return
+      
+    if cpu_temp_value and cpu_temp_value >= 72:
         current_time = int(time.time())
         if current_time % 2 == 0:
             myface.append(HOT)
         else:
             myface.append(HOT2)
+        return
 
     if first_run:
         myface.append(AWAKE)
-    else:
-        current_time = int(time.time())
-        state = current_time // 3 % 2
+        return
 
-        sentiment_up = float(coin_data.get("sentiment_votes_up_percentage", "0"))
+    current_time = int(time.time())
+    state = current_time // 3 % 2
+    sentiment_up = float(coin_data.get("sentiment_votes_up_percentage", "0"))
 
-        if sentiment_up > 75:
-
-            if look_counter < 4:  
-                if look_counter % 2 == 0:
-                    myface.append(LOOK_R_HAPPY)
-                else:
-                    myface.append(LOOK_L_HAPPY)
-                look_counter += 1
-            else:
-                myface.append(COOL)
-                look_counter = 0 
-        elif sentiment_up > 50:
-            if state == 0: 
+    if sentiment_up > 75:
+        if look_counter < 4:  
+            if look_counter % 2 == 0:
                 myface.append(LOOK_R_HAPPY)
             else:
                 myface.append(LOOK_L_HAPPY)
+            look_counter += 1
         else:
-            if state == 0:
-                myface.append(LOOK_R)
-            else:
-                myface.append(LOOK_L)
+            myface.append(COOL)
+            look_counter = 0 
+    elif sentiment_up > 50:
+        if state == 0: 
+            myface.append(LOOK_R_HAPPY)
+        else:
+            myface.append(LOOK_L_HAPPY)
+    else:
+        if state == 0:
+            myface.append(LOOK_R)
+        else:
+            myface.append(LOOK_L)
+
 
 def get_historical_prices(coin_id):
     coin_graph = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart?vs_currency=usd&days={graph_history}"
@@ -453,7 +491,6 @@ def draw_header(draw, coin, coin_data, font, screen_width=250):
     draw.text((x_position, 0), rank_text, font=font, fill=text_color)
     x_position += rank_text_width + gap_between_texts
 
-    # Draw the time
     draw.text((x_position, 0), time_text, font=font, fill=text_color)
     
     
@@ -462,11 +499,9 @@ def draw_footer(draw, coin, coin_data, ath, ath_date, font, screen_width=250):
     # Format the ATH date
     formatted_ath_date = format_ath_date(ath_date)
     
-    # Prepare the text for ATH, date, and percentage change
     ath_text = f"ATH:   ${ath:,.{coin['format']}f}"
     percentage_text = f"{coin_data['percentage_change_from_ath']:.2f} %"
     
-    # Calculate text widths
     ath_text_width = draw.textbbox((0, 0), ath_text, font=font)[2]
     percentage_text_width = draw.textbbox((0, 0), percentage_text, font=font)[2]
     
@@ -475,17 +510,16 @@ def draw_footer(draw, coin, coin_data, ath, ath_date, font, screen_width=250):
         date_text_width = draw.textbbox((0, 0), date_text, font=font)[2]
     else:
         space = 1
-        date_text = ""  # Skip the date
+        date_text = "" 
         date_text_width = 0
 
     x_ath = 5
     x_percentage = screen_width - percentage_text_width - 5
     
-    # Center the date between ATH and percentage if it exists
     if date_text:
         x_date = (x_ath + ath_text_width + x_percentage - date_text_width) // space
     else:
-        x_date = 0  # No date, so no x-coordinate needed
+        x_date = 0
 
     draw.text((x_ath, 109), ath_text, font=font, fill=text_color)
     if date_text:
@@ -535,34 +569,42 @@ def draw_line_graph(draw, image, coin_data, line_y, line_width, time_period_labe
 
 def toggle_display(draw, image, coin, coin_data, current_quote, switch_interval=10):
     current_time = time.time()
-
     total_quotes = len(quotes_list)
     cycle_time = switch_interval * (total_quotes + 4)
-
     cycle_position = current_time % cycle_time
+
+    text_box = (125, 45, 400, 80)
+    draw.rectangle(text_box, fill=bg_color)
 
     if cycle_position < switch_interval:
         formatted_market_cap = format_large_number(coin_data['market_cap'])
-        draw.text((125, 50), f"Market Cap: ${formatted_market_cap}", font=font12, fill=text_color)
+        current_quote = f"Market Cap: ${formatted_market_cap}"
     elif cycle_position < switch_interval * 2:
         formatted_circulation = format_large_number(coin_data['circulating_supply'])
-        draw.text((125, 50), f"Circulation: {formatted_circulation}", font=font12, fill=text_color)
+        current_quote = f"Circulation: {formatted_circulation}"
     elif cycle_position < switch_interval * 3:
         formatted_total_supply = format_large_number(coin_data['total_supply'])
-        draw.text((125, 50), f"Total Supply: {formatted_total_supply}", font=font12, fill=text_color)
+        current_quote = f"Total Supply: {formatted_total_supply}"
     elif cycle_position < switch_interval * 4:
-        draw.text((125, 45), f"High: ${coin_data['high_24h']:,.{coin['format']}f}", font=font12, fill=text_color)
-        draw.text((125, 60), f"Low: ${coin_data['low_24h']:,.{coin['format']}f}", font=font12, fill=text_color)
+        current_quote = f"High: ${coin_data['high_24h']:,.{coin['format']}f}\nLow: ${coin_data['low_24h']:,.{coin['format']}f}"
     else:
-        quote_index = int((cycle_position - switch_interval * 2) // switch_interval)
-        current_quote = quotes_list[quote_index % total_quotes]  # Ensure the quotes cycle correctly
-        draw.text((125, 50), current_quote, font=font12, fill=text_color)
+        quote_index = int((cycle_position - switch_interval * 4) // switch_interval)
+        current_quote = quotes_list[quote_index % total_quotes]
+
+    # Override quote if HOT face
+    if myface and myface[0] == HOT:
+        hot_index = int(time.time() // switch_interval) % len(hot_quotes)  # cycle every switch_interval seconds
+        current_quote = hot_quotes[hot_index]
+    
+    draw.text((125, 45), current_quote, font=font12, fill=text_color)
+
+
         
         
 def toggle_bottom_display(draw, image, coin, coin_data, epd, switch_interval=30):
     current_time = time.time()
 
-    cycle_position = current_time % (3 * switch_interval)
+    cycle_position = current_time % (4 * switch_interval)
 
     if cycle_position < switch_interval:
         line_y = 95
@@ -611,7 +653,7 @@ def toggle_bottom_display(draw, image, coin, coin_data, epd, switch_interval=30)
     elif cycle_position < 2 * switch_interval:
         draw_line_graph(draw, image, coin_data, line_y=95, line_width=196, time_period_label="24H", low_key="low_24h", high_key="high_24h", current_key="current_price", coin=coin, font=font12)
 
-    else:
+    elif cycle_position < 3 * switch_interval:
 
         label_y = 76
         value_y = 90
@@ -644,7 +686,7 @@ def toggle_bottom_display(draw, image, coin, coin_data, epd, switch_interval=30)
             label_x = current_x + (pair_width - draw.textbbox((0, 0), label, font=font12)[2]) // 2
             value_x = current_x + (pair_width - draw.textbbox((0, 0), value, font=font12)[2]) // 2
 
-            draw.text((label_x, label_y), label, font=font12, fill=text_color)
+            draw.text((label_x, label_y), label, font=BOLD_FONT, fill=text_color)
             draw.text((value_x, value_y), value, font=font12, fill=text_color)
 
             current_x += pair_width
@@ -655,7 +697,57 @@ def toggle_bottom_display(draw, image, coin, coin_data, epd, switch_interval=30)
                 draw.text((separator_x, value_y), separator, font=font15, fill=text_color)
                 current_x += separator_width + spacing
 
+    else:
+        global news_titles, last_news_fetch_time
 
+        current_time = time.time()
+        if not news_titles or (current_time - last_news_fetch_time) > NEWS_FETCH_INTERVAL:
+            RSS_URL = pick_random_news_feed()
+            feed = feedparser.parse(RSS_URL)
+            news_titles = [entry.get("title", "No Title").upper() for entry in feed.entries][:5]
+            if not news_titles:
+                news_titles = ["No news available"]
+            last_news_fetch_time = current_time
+    
+        if news_titles:
+            index = int(current_time / 10) % len(news_titles)
+            title = news_titles[index]
+        else:
+            title = "No news available"
+    
+        news_y_start = 76
+        x_start = 60
+        max_width = 190
+        max_lines = 2
+    
+        words = title.split()
+        lines = []
+        line = ""
+        for w in words:
+            test_line = line + " " + w if line else w
+            bbox = draw.textbbox((0, 0), test_line, font=NewsFont)
+            line_width = bbox[2] - bbox[0]
+            if line_width > max_width:
+                lines.append(line)
+                line = w
+                if len(lines) == max_lines:
+                    line = line.rstrip() + "…"
+                    break
+            else:
+                line = test_line
+        if line and len(lines) < max_lines:
+            lines.append(line)
+    
+        draw.text((4, 84), "NEWS:", font=NewsFont, fill=text_color)
+    
+        y = news_y_start
+        for l in lines:
+            draw.text((x_start, y), l, font=NewsFont, fill=text_color)
+            y += 14
+    
+            
+            
+        
 def display_coin_data(epd, coin, coin_data, coin_price, price_change_24h, price_change_7d, price_change_30d, price_change_60d, price_change_200d, price_change_1y, cpu_temp, cpu_usage, memory_usage, show_graph=False, now=None, ath="N/A", ath_date="N/A", showing_sentiment=False):
 
     global current_quote
@@ -663,19 +755,30 @@ def display_coin_data(epd, coin, coin_data, coin_price, price_change_24h, price_
     image = Image.new('1', (epd.height, epd.width), bg_color)
     draw = ImageDraw.Draw(image)
 
-    draw.rectangle((0, 0, 250, 122), fill=bg_color)
+    draw.rectangle((0, 0, epd.height, epd.width), fill=bg_color)
 
-    draw_header(draw, coin, coin_data, font12, screen_width=248)
+    draw_header(draw, coin, coin_data, font12, screen_width=(epd.height-2))
 
-    draw.line([(0, 14), (250, 14)], fill=text_color, width=1)
+    draw.line([(0, 14), (epd.height, 14)], fill=text_color, width=1)
     
-    draw.text((5, 15), f"{username}>", font=font12, fill=text_color)
+    holdings_usd = 15_000
 
-    if myface and myface[0] == HOT:
-        current_quote = "It's getting hot!"
-      
-    toggle_bottom_display(draw, image, coin, coin_data, epd)
+    if holdings_usd > 0 and holdings_usd < 1_000:
+        symbols  = 1
+    elif holdings_usd >= 1_000 and holdings_usd < 10_000:
+        symbols  = 2
+    elif holdings_usd >= 10_000 and holdings_usd < 100_000:
+        symbols  = 3
+    elif holdings_usd >= 100_000 and holdings_usd < 1_000_000:
+        symbols  = 4
+    else:
+        symbols = 5    
+    symbols = min(symbols, 5)  
+    draw.text((5, 15), f"{username}> {'$ ' * symbols}", font=font12, fill=text_color)
+
     toggle_display(draw, image, coin, coin_data, current_quote)
+    toggle_bottom_display(draw, image, coin, coin_data, epd)
+    
 
     if coin['format'] > 10:
         font = font18
@@ -686,11 +789,15 @@ def display_coin_data(epd, coin, coin_data, coin_price, price_change_24h, price_
     else:
         font = font25
         
-    draw.text((125, 16), f"${coin_data['current_price']:,.{coin['format']}f}", font=font, fill=text_color)
     
-    draw.line([(0, 108), (250, 108)], fill=text_color, width=1)
+    Price_text = f"${coin_data['current_price']:,.{coin['format']}f}"
+    text_width = draw.textbbox((0, 0), Price_text, font=font)[2]
+    x = 240 - text_width
+    draw.text((x, 16), Price_text, font=font, fill=text_color)
+    
+    draw.line([(0, 108), (epd.height, 108)], fill=text_color, width=1)
 
-    draw_footer(draw, coin, coin_data, ath, ath_date, font12, screen_width=248)
+    draw_footer(draw, coin, coin_data, ath, ath_date, font12, screen_width=(epd.height-2))
 
     if show_graph:
         historical_prices = fetch_historical_prices_with_cache(coin['id'])
@@ -706,7 +813,11 @@ def display_coin_data(epd, coin, coin_data, coin_price, price_change_24h, price_
     epd.displayPartial(epd.getbuffer(image))
 
 def main():
-    coins = fallback_coins
+    global coins
+    
+    with open("templates/coins.json", "r") as f:
+        coins = json.load(f)
+    coins = validate_coins(coins)
     visible_coins = [coin for coin in coins if coin.get("show", True)]
     if not visible_coins:
         visible_coins = fallback_coins
@@ -824,6 +935,8 @@ def main():
                 Fallback_length = len(fallback_coins)
                 random_coin = random.choice(range(Fallback_length))
                 visible_coins = [fallback_coins[random_coin]]
+                print(f"Displaying fallback coin: {fallback_coins[random_coin]['name']} ({fallback_coins[random_coin]['display']}).")
+                print(f"Visit http://{host_ip}:5000 to manage your coins.")
                 
             coin_index = (coin_index + 1) % len(visible_coins)
             last_coin_update_time = current_time
