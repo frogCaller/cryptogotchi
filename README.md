@@ -27,7 +27,6 @@ Data provided by [CoinGecko](https://www.coingecko.com/en/api)
    - Open a terminal on your Raspberry Pi.
    - Run `sudo raspi-config`
    - Navigate to Interfacing Options -> SPI -> Enable.
-   - Navigate to Interfacing Options -> I2C -> Enable.
 
 3. Clone the repository:
    ```bash
