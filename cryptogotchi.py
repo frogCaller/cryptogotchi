@@ -100,17 +100,17 @@ first_run = True
 last_price_fetch_time = 0
 last_graph_display_time = time.time() - 120
 
-font10 = ImageFont.truetype('static/Fonts/Font.ttc', 10)
-font12 = ImageFont.truetype('static/Fonts/Font.ttc', 12)
-font15 = ImageFont.truetype('static/Fonts/Font.ttc', 15)
-font18 = ImageFont.truetype('static/Fonts/Font.ttc', 18)
-font20 = ImageFont.truetype('static/Fonts/Font.ttc', 20)
-font22 = ImageFont.truetype('static/Fonts/Font.ttc', 22)
-font25 = ImageFont.truetype('static/Fonts/Font.ttc', 25)
-font30 = ImageFont.truetype('static/Fonts/Font.ttc', 30)
-face32 = ImageFont.truetype('static/Fonts/DejaVuSansMono.ttf', 32)
+font10 = ImageFont.truetype('Fonts/Font.ttc', 10)
+font12 = ImageFont.truetype('Fonts/Font.ttc', 12)
+font15 = ImageFont.truetype('Fonts/Font.ttc', 15)
+font18 = ImageFont.truetype('Fonts/Font.ttc', 18)
+font20 = ImageFont.truetype('Fonts/Font.ttc', 20)
+font22 = ImageFont.truetype('Fonts/Font.ttc', 22)
+font25 = ImageFont.truetype('Fonts/Font.ttc', 25)
+font30 = ImageFont.truetype('Fonts/Font.ttc', 30)
+face32 = ImageFont.truetype('Fonts/DejaVuSansMono.ttf', 32)
 BOLD_FONT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 12)
-NewsFont = ImageFont.truetype(('static/Fonts/GravitasOne-Regular.ttf'), 10)
+NewsFont = ImageFont.truetype(('Fonts/GravitasOne-Regular.ttf'), 10)
 
 
 news_titles = []
