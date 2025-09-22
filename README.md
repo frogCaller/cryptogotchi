@@ -23,7 +23,7 @@ Data provided by [CoinGecko](https://www.coingecko.com/en/api)
 1. **OS install:**
    - Install Raspberry Pi OS Lite (64-bit) on your Raspberry Pi <br />
 
-2. **Enable SPI & I2C:**
+2. **Enable SPI:**
    - Open a terminal on your Raspberry Pi.
    - Run `sudo raspi-config`
    - Navigate to Interfacing Options -> SPI -> Enable.
@@ -48,7 +48,12 @@ Data provided by [CoinGecko](https://www.coingecko.com/en/api)
    ```bash
    python3 app.py
    ```
-
+   Open a browser and go to:
+   ```bash
+   http://<raspberrypi-IP>:5000
+   ```
+   Replace <raspberrypi-IP> with your Raspberry Pi’s actual IP address (e.g., http://192.168.0.41:5000).
+   
 # Configuration  Instructions  
 The **`config.yaml`** file is used to customize the behavior and appearance of `cryptogotchi`. Follow these steps to edit the file and adjust the settings:
 1. Open the `config.yaml` file in a text editor:
@@ -68,7 +73,7 @@ The **`config.yaml`** file is used to customize the behavior and appearance of `
    
 # Troubleshooting
 Common Issues:
-   - Ensure SPI & I2C are enabled in the Raspberry Pi configuration.
+   - Ensure SPI is enabled in the Raspberry Pi configuration.
    - Check all connections if the screen does not display anything.
    - Verify all required packages are installed correctly.
    - [More Info](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual)
