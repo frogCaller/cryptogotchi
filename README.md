@@ -52,7 +52,7 @@ Data provided by [CoinGecko](https://www.coingecko.com/en/api)
    ```bash
    http://<raspberrypi-IP>:5000
    ```
-   Replace <raspberrypi-IP> with your Raspberry Pi’s actual IP address (e.g., http://192.168.0.41:5000).
+   Replace <raspberrypi-IP> with your Raspberry Pi’s actual IP address (e.i., http://192.168.0.41:5000).
    
 # Configuration  Instructions  
 The **`config.yaml`** file is used to customize the behavior and appearance of `cryptogotchi`. Follow these steps to edit the file and adjust the settings:
